@@ -9,7 +9,7 @@ const { Log } = require('./log');
 /**
  * Évalue la rapidité du script.
  *
- * Appelez `startScript` pour démarrer l'enregistrement des stats. Appelez `finishScript`
+ * Appelez `startProcessing` pour démarrer l'enregistrement des stats. Appelez `finishProcessing`
  * pour terminer l'enregistrement des stats et obtenir les infos.
  */
 
@@ -34,7 +34,7 @@ class ScriptEvaluator {
      * fini l'enregistrement. Pour démarrer un nouvel enregistrement, crééz un nouvel objet.
      */
 
-    startScript() {
+    startProcessing() {
 
         if (this._startDate !== null) {
             Log.precontionFailure("Le statistiques ne peuvent pas être réactivées.");
@@ -52,7 +52,7 @@ class ScriptEvaluator {
      * @returns {String} La durée d'exécution du script, formattée de manière lisible.
      */
 
-    finishScript() {
+    finishProcessing() {
 
         const endDate = new Date();
 

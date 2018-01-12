@@ -6,7 +6,6 @@
  * Copyright (c) 2018 Alexis Aubry. Licensed under the terms of the MIT Licence.
  */
 
-
 /*=== Core Types ===*/
 
 module.exports.PageLoader = require("./page-loader");
