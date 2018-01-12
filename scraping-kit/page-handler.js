@@ -14,26 +14,20 @@ class PageHandler {
 
     async parseData() {
 
-        return {
-        
-            "transactions": [
-                {
-                    "account": "A",
-                    "transaction": "B",
-                    "amount": 150,
-                    "currency": "€"
-                },
-
-                {
-                    "account": "A",
-                    "transaction": "B",
-                    "amount": 150,
-                    "currency": "€"
-                }
-
-            ]
-        
-        };
+        return [
+            {
+                "Account": "A",
+                "Transaction": "B",
+                "Amount": 150,
+                "Currency": "€"
+            },
+            {
+                "Account": "A",
+                "Transaction": "B",
+                "Amount": 150,
+                "Currency": "€"
+            }
+        ];
         
     }
 

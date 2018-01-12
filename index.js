@@ -34,10 +34,10 @@ async function main() {
     const evaluator = new ScriptEvaluator();
     const pageHandler = new PageHandler(driver);
     
-    evaluator.startScript();
+    evaluator.startProcessing();
     const data = await pageHandler.parseData();
 
-    Log.success(data.transactions.length.toString() + " transactions trouvées.");
+    Log.success(data.length.toString() + " transactions trouvées.");
 
     // 3) Export JSON
 
@@ -46,7 +46,7 @@ async function main() {
 
     // :) Fin du script
 
-    const speedEvaluation =  evaluator.finishScript();
+    const speedEvaluation =  evaluator.finishProcessing();
     Log.finish("Toutes les transactions ont été traitées [" + speedEvaluation + "]");
 
 }
