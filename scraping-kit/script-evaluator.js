@@ -13,7 +13,7 @@ const { Log } = require('./log');
  * pour terminer l'enregistrement des stats et obtenir les infos.
  */
 
-class Stats {
+class ScriptEvaluator {
 
     /**
      * Créé une nouvelle instance.
@@ -88,7 +88,7 @@ class Stats {
 
 }
 
-module.exports = Stats;
+module.exports = ScriptEvaluator;
 
 /*=== Helpers ===*/
 
