@@ -1,0 +1,19 @@
+{
+  "name": "bankin-scraping",
+  "version": "1.0.0",
+  "description": "Bankin' Scraping Challenge",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexaubry/bankin-scraping.git"
+  },
+  "author": "Alexis Aubry",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexaubry/bankin-scraping/issues"
+  },
+  "homepage": "https://blog.bankin.com/challenge-engineering-web-scrapping-dc5839543117",
+  "dependencies": {
+    "selenium-webdriver": "^3.6.0"
+  }
+}
