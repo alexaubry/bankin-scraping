@@ -14,6 +14,10 @@
   },
   "homepage": "https://blog.bankin.com/challenge-engineering-web-scrapping-dc5839543117",
   "dependencies": {
+    "chromedriver": "^2.34.1",
     "selenium-webdriver": "^3.6.0"
+  },
+  "engines": {
+    "node": ">= 8.9.4"
   }
 }

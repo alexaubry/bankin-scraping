@@ -9,7 +9,7 @@
 /*=== Core Types ===*/
 
 module.exports.PageLoader = require("./page-loader");
-module.exports.PageHandler = require("./page-handler");
+module.exports.PageScraper = require("./page-scraper");
 module.exports.ResultHandler = require("./result-handler");
 
 /*== Stats ===*/

@@ -4,12 +4,11 @@
  * Copyright (c) 2018 Alexis Aubry. Licensed under the terms of the MIT Licence.
  */
 
-const { Builder } = require('selenium-webdriver');
-const { Binary, Options } = require('selenium-webdriver/firefox');
-const { Log } = require('./log');
+const { Capabilities, Builder } = require("selenium-webdriver");
+const { Log } = require("./log");
 
 /**
- * Charge une URL dans un driver Firefox.
+ * Charge une URL dans un driver Chrome.
  */
 
 class PageLoader {
@@ -38,9 +37,9 @@ class PageLoader {
     async loadPage() {
 
         try {
-            this._driver = _makeFirefoxDriver();
+            this._driver = _makeChromeDriver();
         } catch(error) {
-            Log.fail("Impossible de démarrer Firefox", error);
+            Log.fail("Impossible de démarrer Chrome", error);
         }
 
         try {
@@ -59,23 +58,33 @@ module.exports = PageLoader;
 /*=== Helpers ===*/
 
 /**
- * Créé un nouveau driver pour Firefox Headless.
+ * Créé un nouveau driver pour Chrome Headless.
  *
- * @returns {ThenableWebDriver} Un driver Firefox.
+ * @returns {ThenableWebDriver} Un driver Chrome.
  * @throws {Error} Si la configuration est invalide.
  */
 
-function _makeFirefoxDriver() {
+function _makeChromeDriver() {
 
-    const firefoxBinary = new Binary();
-    firefoxBinary.addArguments("-headless");
+    // Trouver le Driver
 
-    const options = new Options();
-    options.setBinary(firefoxBinary);
+    var chromeDriverPath = process.cwd();
+
+    if (chromeDriverPath.endsWith("/") == false) {
+        chromeDriverPath += "/";
+    }
+
+    chromeDriverPath += "node_modules/chromedriver/bin";
+    process.env.PATH += (":" + chromeDriverPath);
+
+    // Démarrer Chrome
+
+    const chromeCapabilities = Capabilities.chrome();
+    chromeCapabilities.set("chromeOptions", {args: ["--headless"]});    
 
     return new Builder()
-        .forBrowser("firefox")
-        .setFirefoxOptions(options)
+        .forBrowser("chrome")
+        .withCapabilities(chromeCapabilities)
         .build();
 
 }

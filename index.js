@@ -7,7 +7,7 @@
  * Copyright (c) 2018 Alexis Aubry. Licensed under the terms of the MIT License.
  */
 
-const { PageLoader, PageHandler, ResultHandler, Log, ScriptEvaluator } = require("./scraping-kit");
+const { PageLoader, PageScraper, ResultHandler, Log, ScriptEvaluator } = require("./scraping-kit");
 
 /** L'URL de la page des transactions. */
 const transactionsURL = "https://web.bankin.com/challenge/index.html";
@@ -32,10 +32,10 @@ async function main() {
 
     Log.step("2", "Analyse de la page...");
     const evaluator = new ScriptEvaluator();
-    const pageHandler = new PageHandler(driver);
-    
+    const scraper = new PageScraper(driver);
+
     evaluator.startProcessing();
-    const data = await pageHandler.parseData();
+    const data = await scraper.parseTransactionData();
 
     Log.success(data.length.toString() + " transactions trouvées.");
 

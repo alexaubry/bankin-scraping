@@ -1,9 +1,11 @@
-## Installation
+# Challenge Scraping Bankin' 
 
-1. Installez Node JS (version minimum: 8.0 LTS)
+## Utilisation
 
-2. Téléchargez le driver Gecko pour votre système
+1. Installez Node JS (version minimum: 8.9.4 LTS)
 
-https://github.com/mozilla/geckodriver/releases/
+2. Ouvrez un terminal, clonez et `cd` dans ce répertoire
 
-3. Placez l'exécutable dans votre PATH (/usr/local/bin pour macOS)
+3. Installez les dépendances Node (`npm install`)
+
+4. Lancez le script avec la commande `node .`

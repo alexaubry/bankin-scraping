@@ -32,7 +32,7 @@ class ResultHandler {
 
             var outputPath = process.cwd();
 
-            if (outputPath.charAt(outputPath.length - 1) != "/") {
+            if (outputPath.endsWith("/") == false) {
                 outputPath += "/";
             }
 

@@ -11,6 +11,16 @@
 class Log {
 
     /**
+     * Affiche un message d'information sur le script.
+     * 
+     * @param {String} message Le message d'info à afficher.
+     */
+
+    static info(message) {
+        console.log("•", info);
+    }
+
+    /**
      * Indique une étape d'un processus.
      *
      * @param {String} i Le numéro de l'étape dans le processus.
