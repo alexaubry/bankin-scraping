@@ -149,8 +149,23 @@ Ce format permet de récupérer rapidement les données. Une fois cet Array obte
 
 Pour la pagination, plusieurs solutions étaient aussi possibles:
 
-- Changer le paramètre `start` dans 
-- Utiliser JavaScript pour recharger les données sans requête réseau. 
+- Changer le paramètre `start` dans l'URL et recharger la page
+- Utiliser JavaScript pour recharger les données sans requête réseau
+
+Pour des raisons évidentes de rapidité, la solution 1 s'impose. De plus, l'utilisation de la fonction `doGenerate()` lors de la normalisation permet de recharger rapidement le tableau et de réduire au maximum la latence entre le traitement de chaque page.
+
+### Conclusion
+
+Le scraping s'articule donc de la manière suivante:
+
+~~~
+Tant que toutes les pages n'ont pas été traitées
+
+    - changer le numéro de page (variable `start`)
+    - normaliser la page et recharger les données
+    - extraire les données
+    - ajouter les données au résultat global
+~~~
 
 ## Fonctionnement
 
@@ -160,9 +175,9 @@ Pour la pagination, plusieurs solutions étaient aussi possibles:
 
 3. Avec le driver retourné par le `PageLoader`, on créé un `PageScraper`, qui retournera la liste des transactions
 
-4. La fonction `ResultsHandler.exportTransactions` convertit les transactions au format JSON et écrit le fichier sur le disque.
+4. La fonction `ResultsHandler.exportTransactions` convertit les transactions au format JSON et écrit le fichier sur le disque
 
-5. On affiche un message de succès et la durée totale du scraping et de l'enregistrement en JSON.
+5. On affiche un message de succès et la durée totale du scraping et de l'enregistrement en JSON
 
 ## Auteur
 
