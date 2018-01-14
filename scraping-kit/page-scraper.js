@@ -120,32 +120,23 @@ async function parseWebElements(driver) {
     // Regénérer la table
     await driver.executeScript("doGenerate();");
 
-    // Obtenir le texte du tableau
-    const tableText = await driver.executeScript(Get_Main_Table_Text_Script);
+    // Obtenir le contenu de chaque ligne du table (sous forme d'array)
+    const tableRows = await driver.executeScript(extractMainTableRows);
 
     // Scrapper le contenu de la table et le retourner à la fonction principale.
-    return parseTable(tableText);
+    return parseTable(tableRows);
 
 }
 
 /**
  * Extraits les transactions d'un tableau HTML.
  * 
- * Le texte doit être au format:
- * 
- * [Account]@@[Transaction]@@[Amount[Currency]]\n
- * ...
- * \n
- * 
- * @param {WebElement} text La représentation textuelle du tableau où se trouvent les transactions.
+ * @param {String[][]} rows Les lignes tableau où se trouvent les transactions.
  */
 
-async function parseTable(text) {
+async function parseTable(rows) {
 
     // > Statut du tableau
-
-    // Séparer les lignes du tableau
-    const rows = text.split("\n");
 
     if (rows.length == 0) {
         // Si le tableau ne contient pas de lignes, alors toutes les transactions ont été
@@ -159,8 +150,7 @@ async function parseTable(text) {
     var transactions = [];
     
     // Pour chaque rangée, extraire une transaction.
-    // On ignore la dernière rangée car elle est vide (voir Get_Main_Table_Text_Script).
-    for (var i = 0; i < (rows.length - 1); i++) {
+    for (var i = 0; i < rows.length; i++) {
         const transaction = await parseTransactionRow(rows[i]);
         transactions.push(transaction);
     }
@@ -194,11 +184,7 @@ async function dismissAlertIfNeeded(driver) {
 /**
  * Extrait les informations de transaction d'une rangée d'un tableau.
  * 
- * @param {String} text Le texte de la rangée du tableau  où se trouve la transaction.
- * 
- * Le texte doit être au format:
- * 
- * [Account]@@[Transaction]@@[Amount[Currency]]
+ * @param {String[]} data Un array contenant chaque colonne de la transaction.
  * 
  * La rangée doit contenir trois colonnes. La transaction est retournée au format suivant:
  * 
@@ -215,15 +201,7 @@ async function dismissAlertIfNeeded(driver) {
  * @return {object} L'objet contenant les infos de la transaction.
  */
 
-async function parseTransactionRow(text) {
-
-    // Séparer les trois rangées
-    const data = text.split("@@");
-
-    // Obtenir le compte et la transaction
-
-    const account = data[0];
-    const transaction = data[1];
+async function parseTransactionRow(data) {
 
     // Obtenir le montant et la devise
 
@@ -233,9 +211,11 @@ async function parseTransactionRow(text) {
     const amountText = amountCellText.slice(0, amountCellText.length - 1);
     const amount = parseInt(amountText);
 
+    // Créer l'objet transaction au format JSON
+
     return {
-        "Account": account,
-        "Transaction": transaction,
+        "Account": data[0],
+        "Transaction": data[1],
         "Amount": amount,
         "Currency": currency
     };
@@ -243,48 +223,39 @@ async function parseTransactionRow(text) {
 }
 
 /**
- * Extrait le texte du tableau principal et ajoute les séparateurs standards.
+ * Extrait le texte du tableau principal et retourne un Array.
  *
  * Ce script JS est exécuté dans Chrome directement (plus de rapidité).
  * 
- * Après chaque case du tableau, le script ajoute les caractères “@@“, qui permettront
- * de séparer les cases a posteriori.
+ * La première ligne du tableau (l'en-tête) est ignorée. Si ce script retourne un
+ * Array vide alors le tableau est vide et le scraping est terminé.
  * 
- * Chaque ligne sera séparée par un retour à la ligne dans la valeur de retour.
- * 
- * La première ligne du tableau (l'en-tête) est ignorée. Si ce script ne contient pas de
- * nouvelles lignes (“\n“) alors le tableau est vide et le scraping est terminé.
- * 
- * La dernière ligne du texte retourné est vide et doit être ignorée en parsant le texte.
- * 
- * Chaque rangée est retournée au format:
- * 
- * [Account]@@[Transaction]@@[Amount[Currency]]
- * 
- * @return {String} La représentation textuelle du tableau.
+ * @return {String[][]} Un array contenant le contenu de chaque ligne du tableau.
  * 
  * Exemple:
  * 
- * Savings@@Transaction 2@@250€\n
- * Checking@@Transaction 3@@800€\n
+ * [
+ *   ["Savings", "Transaction 2", "250€"],
+ *   ["Checking", "Transaction 3", "800€"]
+ * ] 
  */
 
-const Get_Main_Table_Text_Script = `
+const extractMainTableRows = `
 var table = document.getElementsByTagName("table")[0];
 
-var rows = "";
+var rows = [];
 var rowElements = table.getElementsByTagName("tr");
 
 for(var i=1; i< rowElements.length; i++) {
 
-   var cells = rowElements[i].children;
+    var cells = rowElements[i].children;
     var cellTexts = [];
 
     for(var j=0; j < cells.length; j++) {
        cellTexts.push(cells[j].innerText);
     }
         
-    rows += (cellTexts.join("@@") + "\\n");
+    rows.push(cellTexts);
       
 }
       
