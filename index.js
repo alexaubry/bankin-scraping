@@ -46,7 +46,7 @@ async function main() {
 
     // :) Fin du script
 
-    const speedEvaluation =  evaluator.finishProcessing();
+    const speedEvaluation = evaluator.finishProcessing();
     Log.finish("Toutes les transactions ont été traitées [" + speedEvaluation + "]");
 
 }

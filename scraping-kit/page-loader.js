@@ -23,6 +23,7 @@ class PageLoader {
         this.url = url;
         this._driver = null;
     }
+
     /**
      * Charge la page web.
      *
@@ -66,7 +67,10 @@ module.exports = PageLoader;
 
 function _makeChromeDriver() {
 
-    // Trouver le Driver
+    // > Trouver le Driver
+
+    // Le driver se situe dans le dossier ./node_modules
+    // On ajoute ce dossier au PATH pour que Selenium puisse le trouver
 
     var chromeDriverPath = process.cwd();
 
@@ -77,10 +81,10 @@ function _makeChromeDriver() {
     chromeDriverPath += "node_modules/chromedriver/bin";
     process.env.PATH += (":" + chromeDriverPath);
 
-    // Démarrer Chrome
+    // > Démarrer Chrome en mode Headless
 
     const chromeCapabilities = Capabilities.chrome();
-    chromeCapabilities.set("chromeOptions", {args: ["--headless"]});    
+    chromeCapabilities.set("chromeOptions", {args: ["--headless"]});
 
     return new Builder()
         .forBrowser("chrome")

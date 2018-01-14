@@ -28,7 +28,7 @@ class ResultHandler {
 
             const jsonBody = JSON.stringify(transactionsObject, null, 2);
 
-            // Chemin de sortie
+            // Chemin de sortie (./transactions.json)
 
             var outputPath = process.cwd();
 

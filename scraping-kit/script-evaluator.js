@@ -104,7 +104,7 @@ function _formatMS(time) {
     let minutes = (Math.floor(time / 60)).toString();
     let seconds = (Math.floor(time % 60)).toString();
 
-    return minutes + "min. " + seconds + "s";
+    return minutes + "‘ " + seconds + "s";
 
 }
 
