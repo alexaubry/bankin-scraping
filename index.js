@@ -18,7 +18,7 @@ const transactionsURL = "https://web.bankin.com/challenge/index.html";
 
 async function main() {
 
-    console.log("=== SCRAPING BANKIN' TRANSACTIONS ===");
+    console.log("=== BANKIN' SCRAPING CHALLENGE ===");
 
     // 1) Chargement de la page des transactions
 
