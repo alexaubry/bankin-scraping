@@ -11,16 +11,6 @@
 class Log {
 
     /**
-     * Affiche un message d'information sur le script.
-     * 
-     * @param {String} message Le message d'info à afficher.
-     */
-
-    static info(message) {
-        console.log("•", info);
-    }
-
-    /**
      * Indique une étape d'un processus.
      *
      * @param {String} i Le numéro de l'étape dans le processus.
@@ -44,14 +34,14 @@ class Log {
     }
 
     /**
-     * Indique une erreur de programmation et quitte le processus avec le code d'erreur “-1“.
+     * Indique une erreur de programmation et quitte le processus avec le code d'erreur “-2“.
      *
      * @param {String} message Une description de l'erreur de programmation.
      */
 
     static preconditionFailure(message) {
         console.log("\x1b[31m" + message + "\x1b[0m");
-        process.exit(-1);
+        process.exit(-2);
     }
 
     /**
