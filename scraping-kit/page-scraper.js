@@ -107,43 +107,59 @@ async function parseWebElements(driver) {
     // Les transactions qui ont été trouvées sur cette page.
     var transactions = [];
 
-    // Normaliser la page et obtenir le contenu de chaque ligne du table (sous forme d'array)
-    const tableRows = await driver.executeScript(extractMainTableRows);
+    // Normaliser la page et obtenir les transactions.
 
-    // Scrapper le contenu de la table et le retourner à la fonction principale.
-    return parseTable(tableRows);
+    return await driver.executeScript(`
+        generate = function() {}
+        failmode = false; slowmode = false; hasiframe = false;
+        doGenerate();
 
-}
+        var table = document.getElementsByTagName("table")[0];
 
-/**
- * Extraits les transactions d'un tableau.
- *
- * @param {String[][]} rows Les lignes tableau où se trouvent les transactions.
- */
+        var rows = [];
+        var rowElements = table.rows;
 
-function parseTable(rows) {
+        // > Statut du tableau
 
-    // > Statut du tableau
+        if (rows.length == 1) {
+            // Si le tableau ne contient pas de lignes, alors toutes les transactions ont été
+            // scrappées. On retourne un array vide pour que la fonction principale comprenne
+            // que le scrapping est terminé.
+            return [];
+        }
 
-    if (rows.length == 0) {
-        // Si le tableau ne contient pas de lignes, alors toutes les transactions ont été
-        // scrappées. On retourne un array vide pour que la fonction principale comprenne
-        // que le scrapping est terminé.
-        return [];
-    }
+        // > Extraction des transactions
 
-    // > Extraction des transactions
+        for(var i=1; i< rowElements.length; i++) {
 
-    var transactions = [];
+            var data = rowElements[i].cells;
 
-    // Pour chaque rangée, extraire une transaction.
-    for (var i = 0; i < rows.length; i++) {
-        const transaction = parseTransactionRow(rows[i]);
-        transactions.push(transaction);
-    }
+            // Obtenir le compte et la transaction
 
-    // On retourne toutes les transactions à la fonction principale.
-    return transactions;
+            var account = data[0].innerText;
+            var transaction = data[1].innerText;
+
+            // Obtenir le montant et la devise
+
+            const amountCellText = data[2].innerText;
+
+            const currency = amountCellText.charAt(amountCellText.length - 1);
+            const amountText = amountCellText.slice(0, amountCellText.length - 1);
+            const amount = parseInt(amountText);
+
+            // Créer l'objet transaction au format JSON
+
+            rows.push({
+                "Account": account,
+                "Transaction": transaction,
+                "Amount": amount,
+                "Currency": currency
+            });
+
+        }
+
+        return rows;
+    `);
 
 }
 
@@ -167,100 +183,3 @@ async function dismissAlertIfNeeded(driver) {
     return driver;
 
 }
-
-/**
- * Extrait les informations de transaction d'une rangée d'un tableau.
- *
- * @param {String[]} data Un array contenant chaque colonne de la transaction.
- *
- * La rangée doit contenir trois colonnes. La transaction est retournée au format suivant:
- *
- * {
- *      "Account": string,
- *      "Transaction": string,
- *      "Amount": number,
- *      "Currency": string
- * }
- *
- * La devise de la transaction est représentée par son symbole (ex: si "Currency": "€" alors la
- * devise est en euros).
- *
- * @return {object} L'objet contenant les infos de la transaction.
- */
-
-function parseTransactionRow(data) {
-
-    // Obtenir le compte et la transaction
-
-    const account = data[0];
-    const transaction = data[1];
-
-    // Obtenir le montant et la devise
-
-    const amountCellText = data[2];
-
-    const currency = amountCellText.charAt(amountCellText.length - 1);
-    const amountText = amountCellText.slice(0, amountCellText.length - 1);
-    const amount = parseInt(amountText);
-
-    // Créer l'objet transaction au format JSON
-
-    return {
-        "Account": account,
-        "Transaction": transaction,
-        "Amount": amount,
-        "Currency": currency
-    };
-
-}
-
-/**
- * Extrait le texte du tableau principal et retourne un Array.
- *
- * Ce script JS est exécuté dans Chrome directement (plus de rapidité).
- * 
- * Avant de traiter les données du tableau, ce script normalise la page et recharge
- * les données:
- * 
- * - Elle désactive le mode échec et le mode lent
- * - Elle désactive les iFrame
- * - Elle recharge le tableau principal, pour afficher les données pour la partie de la liste actuelle
- *
- * La première ligne du tableau (l'en-tête) est ignorée. Si ce script retourne un
- * Array vide alors le tableau est vide et le scraping est terminé.
- *
- * @return {String[][]} Un array contenant le contenu de chaque ligne du tableau.
- *
- * Exemple:
- *
- * [
- *   ["Savings", "Transaction 2", "250€"],
- *   ["Checking", "Transaction 3", "800€"]
- * ]
- */
-
-const extractMainTableRows = `
-generate = function() {}
-failmode = false; slowmode = false; hasiframe = false;
-doGenerate();
-
-var table = document.getElementsByTagName("table")[0];
-
-var rows = [];
-var rowElements = table.getElementsByTagName("tr");
-
-for(var i=1; i< rowElements.length; i++) {
-
-    var cells = rowElements[i].children;
-    var cellTexts = [];
-
-    for(var j=0; j < cells.length; j++) {
-       cellTexts.push(cells[j].innerText);
-    }
-
-    rows.push(cellTexts);
-
-}
-
-return rows;
-`;
