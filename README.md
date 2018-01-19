@@ -6,15 +6,15 @@ Ce paquet Node.JS scarppe les transactions d'une liste pour le [Challenge Engine
 -----------------|------------------------
 &#x2611;&#xFE0F; | Récupère les 4999 transactions
 &#x1F4AF;| 100% fiable, peu importe le mode
-&#x26A1;| Rapide (0,08s par page de 50 items en moyenne)
-&#x2728;| Structure simple et propre
+&#x26A1;| Rapide (≈2.1s sur MacBook Pro 2017)
+&#x2728;| Structure orientée objet, simple et propre
 &#x1F4DA; | 100% documenté
 
 ## Utilisation
 
-1. Installez la dernière version de Google Chrome
+1. Installez la dernière version de Google Chrome (testé avec 63.0)
 
-2. Installez Node JS (version minimum: 8.9.4 LTS)
+2. Installez Node.JS (version minimum: 8.9.4 LTS)
 
 3. Ouvrez un terminal, clonez ce répertoire et `cd` dans le dossier
 
@@ -124,11 +124,11 @@ Une nouvelle fois, deux options semblent pouvoir être choisies:
 - Utiliser Selenium pour récupérer les données depuis le DOM
 - Exécuter un script dans le moteur JavaScript de Chrome avec les API DOM standard
 
-La deuxième option s'est révélée être environ 150 fois plus rapide. En effet, l'API de Selenium utilise des promesses et ne permet pas de regrouper les opérations, ce qui est possible avec l'API DOM de Chrome.
+La deuxième option s'est révélée être environ 150 (!) fois plus rapide. En effet, l'API de Selenium utilise des promesses et ne permet pas de regrouper les opérations, ce qui est possible avec l'API DOM de Chrome.
 
-De plus, Selenium permet de récupérer la valeur de retour d'un script, ce qui nous permet d'obtenir facilement le résultat du traitement fait depuis Chrome.
+De plus, Selenium permet d'écécuter un script dans Chrome et de récupérer la valeur de retour, ce qui nous permet d'obtenir facilement le résultat du traitement fait depuis Chrome.
 
-Le script `extractMainTableRows` (voir `page-scraper.js`) sera donc responsable de traiter chaque rangée du tableau et de retourner son contenu sous forme d'Array.
+Le script `extractMainTableRows` (voir `page-scraper.js`) sera donc responsable de normaliser (cf. paragraphe précédent) et de traiter chaque rangée du tableau et de retourner son contenu sous forme d'Array.
 
 Par exemple, pour ce tableau:
 
@@ -147,12 +147,12 @@ Ce format permet de récupérer rapidement les données. Une fois cet Array obte
 
 ### Pagination
 
-Pour la pagination, plusieurs solutions étaient aussi possibles:
+Pour la pagination, plusieurs solutions étaient également envisageables:
 
 - Changer le paramètre `start` dans l'URL et recharger la page
 - Utiliser JavaScript pour recharger les données sans requête réseau
 
-Pour des raisons évidentes de rapidité, la solution 1 s'impose. De plus, l'utilisation de la fonction `doGenerate()` lors de la normalisation permet de recharger rapidement le tableau et de réduire au maximum la latence entre le traitement de chaque page.
+Pour des raisons évidentes de rapidité, la solution 2 s'impose. De plus, l'utilisation de la fonction `doGenerate()` lors de la normalisation permet de recharger rapidement le tableau et de réduire au maximum la latence entre le traitement de chaque page.
 
 ### Conclusion
 
@@ -171,13 +171,13 @@ Tant que toutes les pages n'ont pas été traitées
 
 1. Un objet `PageLoader` configure Google Chrome et charge la page d'accueil dans un Driver
 
-2. On créé un objet `ScriptEvaluator` pour calculer la durée du scraping hors chargement de la page web
+2. On créé un objet `ScriptEvaluator` pour calculer la durée du scraping après le chargement de la page web
 
 3. Avec le driver retourné par le `PageLoader`, on créé un `PageScraper`, qui retournera la liste des transactions
 
 4. La fonction `ResultsHandler.exportTransactions` convertit les transactions au format JSON et écrit le fichier sur le disque
 
-5. On affiche un message de succès et la durée totale du scraping et de l'enregistrement en JSON
+5. On affiche un message de succès et la durée totale du scraping
 
 ## Auteur
 
