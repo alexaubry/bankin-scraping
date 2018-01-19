@@ -18,6 +18,11 @@ Ce paquet Node.JS scarppe les transactions d'une liste pour le [Challenge Engine
 
 3. Ouvrez un terminal, clonez ce répertoire et `cd` dans le dossier
 
+~~~bash
+git clone https://github.com/alexaubry/bankin-scraping alexaubry-bankin-scraping
+cd alexaubry-bankin-scraping
+~~~
+
 4. Installez les dépendances Node (`npm install`)
 
 5. Lancez le script avec la commande `node .`
