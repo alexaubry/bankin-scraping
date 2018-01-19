@@ -30,10 +30,10 @@ async function main() {
 
     // 2) Démarrage de l'analyse
 
-    Log.step("2", "Analyse de la page...");
     const evaluator = new ScriptEvaluator();
     const scraper = new PageScraper(driver);
 
+    Log.step("2", "Analyse de la page...");
     evaluator.startProcessing();
     const data = await scraper.parseTransactionData();
 

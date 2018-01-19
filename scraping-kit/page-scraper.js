@@ -12,7 +12,7 @@ const { ThenableWebDriver, By } = require("selenium-webdriver");
  * Note: Une fois le driver assigné à un scrappeur, vous ne pourrez plus rien assumer à son propos
  * (ex: URL, contenu HTML, ...) puisque le scrappeur modifiera un grand nombre de données.
  *
- * Il est recommandé de ne plus utilisé le driver après avoir commencé à scrapper la page.
+ * Il est recommandé de ne plus utiliser le driver après avoir commencé à scrapper la page.
  */
 
 class PageScraper {
@@ -51,7 +51,7 @@ class PageScraper {
         var transactions = [];
 
         // Cette boucle va récupérer toutes les transactions, en avançant dans la liste
-        // des transactions jusqu'à ce qu'elle soit vide.
+        // jusqu'à ce qu'elle soit vide.
 
         while(true) {
 
@@ -68,12 +68,12 @@ class PageScraper {
             transactions = transactions.concat(newTransactions);
 
             // On bouge le curseur de la liste après le numéro de la dernière transaction récupérée
-            // (par ex: si on démarre à la transaction 50 et que 50 transactions ont été trouvées,
-            // le prochain cycle commencera à la transaction 100).
+            // (par ex: si on démarre à la transaction 0 et que 50 transactions ont été trouvées,
+            // le prochain cycle commencera à la transaction 50).
             currentIndex += newTransactions.length;
 
             // On charge la suite de la liste dans le driver Chrome.
-            await driver.executeScript("start = " + currentIndex.toString() + ";");
+            await driver.executeScript("start = " + currentIndex + ";");
 
         }
 
@@ -107,16 +107,7 @@ async function parseWebElements(driver) {
     // Les transactions qui ont été trouvées sur cette page.
     var transactions = [];
 
-    // Désactiver le regénération automatique du tableau.
-    await driver.executeScript("generate = function() {};");
-
-    // Désactiver le mode échec, le mode lent et les iFrame
-    await driver.executeScript("failmode = false; slowmode = false; hasiframe = false;");
-
-    // Regénérer la table
-    await driver.executeScript("doGenerate();");
-
-    // Obtenir le contenu de chaque ligne du table (sous forme d'array)
+    // Normaliser la page et obtenir le contenu de chaque ligne du table (sous forme d'array)
     const tableRows = await driver.executeScript(extractMainTableRows);
 
     // Scrapper le contenu de la table et le retourner à la fonction principale.
@@ -130,7 +121,7 @@ async function parseWebElements(driver) {
  * @param {String[][]} rows Les lignes tableau où se trouvent les transactions.
  */
 
-async function parseTable(rows) {
+function parseTable(rows) {
 
     // > Statut du tableau
 
@@ -147,7 +138,7 @@ async function parseTable(rows) {
 
     // Pour chaque rangée, extraire une transaction.
     for (var i = 0; i < rows.length; i++) {
-        const transaction = await parseTransactionRow(rows[i]);
+        const transaction = parseTransactionRow(rows[i]);
         transactions.push(transaction);
     }
 
@@ -197,7 +188,7 @@ async function dismissAlertIfNeeded(driver) {
  * @return {object} L'objet contenant les infos de la transaction.
  */
 
-async function parseTransactionRow(data) {
+function parseTransactionRow(data) {
 
     // Obtenir le compte et la transaction
 
@@ -227,6 +218,13 @@ async function parseTransactionRow(data) {
  * Extrait le texte du tableau principal et retourne un Array.
  *
  * Ce script JS est exécuté dans Chrome directement (plus de rapidité).
+ * 
+ * Avant de traiter les données du tableau, ce script normalise la page et recharge
+ * les données:
+ * 
+ * - Elle désactive le mode échec et le mode lent
+ * - Elle désactive les iFrame
+ * - Elle recharge le tableau principal, pour afficher les données pour la partie de la liste actuelle
  *
  * La première ligne du tableau (l'en-tête) est ignorée. Si ce script retourne un
  * Array vide alors le tableau est vide et le scraping est terminé.
@@ -242,6 +240,10 @@ async function parseTransactionRow(data) {
  */
 
 const extractMainTableRows = `
+generate = function() {}
+failmode = false; slowmode = false; hasiframe = false;
+doGenerate();
+
 var table = document.getElementsByTagName("table")[0];
 
 var rows = [];
