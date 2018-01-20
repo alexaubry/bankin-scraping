@@ -33,7 +33,7 @@ class PageScraper {
      * Cette méthode fournit les résultats du scraping sous la forme d'un Array d'objets.
      *
      * Avant de scrapper les transactions, cette méthode prépare la page:
-     * 
+     *
      * - Elle désactive le mode échec et le mode lent
      * - Elle désactive les iFrame
      * - Elle recharge le tableau principal, pour afficher les données pour la partie de la liste actuelle
@@ -74,44 +74,39 @@ class PageScraper {
 
                 var table = document.getElementsByTagName("table")[0];
                 var rows = table.rows;
-    
+
                 // > Statut du tableau
-    
+
                 if (rows.length == 1) {
                     // Si il n'y a pas de nouvelles transactions (le tableau est vide)
                     // alors le scraping est terminé, on peut quitter la boucle.
                     break;
                 }
-    
+
                 // > Extraction des transactions
-    
+
                 for(var i=1; i< rows.length; i++) {
-    
+
                     var data = rows[i].cells;
-    
-                    // Obtenir le compte et la transaction
-    
-                    var account = data[0].innerText;
-                    var transaction = data[1].innerText;
-    
+
                     // Obtenir le montant et la devise
-    
+
                     const amountCellText = data[2].innerText;
-    
+
                     const currency = amountCellText.charAt(amountCellText.length - 1);
                     const amountText = amountCellText.slice(0, amountCellText.length - 1);
                     const amount = parseInt(amountText);
-    
+
                     // Créer l'objet transaction au format JSON
-    
+
                     transactions.push({
-                        "Account": account,
-                        "Transaction": transaction,
+                        "Account": data[0].innerText,
+                        "Transaction": data[1].innerText,
                         "Amount": amount,
                         "Currency": currency
                     });
-    
-                }    
+
+                }
 
                 // On bouge le curseur de la liste après le numéro de la dernière transaction récupérée
                 // (par ex: si on démarre à la transaction 0 et que 50 transactions ont été trouvées,

@@ -1,9 +1,9 @@
 /*
  * bankin-scraping
- * 
+ *
  * Ce script charge la page demandée et en extrait les transactions. Pour plus d'informations
  * sur les technologies utilisées et sa structure, voir le fichier README.md.
- * 
+ *
  * Copyright (c) 2018 Alexis Aubry. Licensed under the terms of the MIT License.
  */
 
