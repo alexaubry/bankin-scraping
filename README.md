@@ -133,22 +133,7 @@ La deuxième option s'est révélée être environ 150 (!) fois plus rapide. En 
 
 De plus, Selenium permet d'écécuter un script dans Chrome et de récupérer la valeur de retour, ce qui nous permet d'obtenir facilement le résultat du traitement fait depuis Chrome.
 
-Le script `extractMainTableRows` (voir `page-scraper.js`) sera donc responsable de normaliser (cf. paragraphe précédent) et de traiter chaque rangée du tableau et de retourner son contenu sous forme d'Array.
-
-Par exemple, pour ce tableau:
-
-![Sample Table](.github/sample-table.png)
-
-Le script retourera l'Array suivant:
-
-~~~javascript
-[
-    ["Savings", "Transaction 4998", "53€"],
-    ["Savings", "Transaction 4999", "38€"]
-]
-~~~
-
-Ce format permet de récupérer rapidement les données. Une fois cet Array obtenu, il suffit de séparer le symbole de la devise du montant, et on peut retourner les transactions au format JSON.
+Dans la méthode `parseTransactionData`, on extrait les données du tableau et ajoute la transaction à l'Array JSON.
 
 ### Pagination
 
