@@ -6,7 +6,7 @@ Ce paquet Node.JS scarppe les transactions d'une liste pour le [Challenge Engine
 -----------------|------------------------
 &#x2611;&#xFE0F; | Récupère les 4999 transactions
 &#x1F4AF;| 100% fiable, peu importe le mode
-&#x26A1;| Rapide (≈2.1s sur MacBook Pro 2017)
+&#x26A1;| Rapide (≈1.6s sur MacBook Pro 2017)
 &#x2728;| Structure orientée objet, simple et propre
 &#x1F4DA; | 100% documenté
 

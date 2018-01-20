@@ -15,4 +15,4 @@ module.exports.ResultHandler = require("./result-handler");
 /*== Stats ===*/
 
 module.exports.Log = require("./log");
-module.exports.ScriptEvaluator = require("./script-evaluator");
+module.exports.Benchmark = require("./benchmark");
