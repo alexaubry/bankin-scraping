@@ -5,7 +5,7 @@
  */
 
 const { Capabilities, Builder } = require("selenium-webdriver");
-const { Log } = require("./log");
+const Log = require("./log");
 
 /**
  * Charge une URL dans un driver Chrome.

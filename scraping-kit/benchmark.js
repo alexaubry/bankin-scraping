@@ -4,7 +4,7 @@
  * Copyright (c) 2018 Alexis Aubry. Licensed under the terms of the MIT Licence.
  */
 
-const { Log } = require("./log");
+const Log = require("./log");
 
 /**
  * Évalue la rapidité du script.
