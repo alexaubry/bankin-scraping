@@ -32,6 +32,12 @@ class PageScraper {
      *
      * Cette méthode fournit les résultats du scraping sous la forme d'un Array d'objets.
      *
+     * Avant de scrapper les transactions, cette méthode prépare la page:
+     * 
+     * - Elle désactive le mode échec et le mode lent
+     * - Elle désactive les iFrame
+     * - Elle recharge le tableau principal, pour afficher les données pour la partie de la liste actuelle
+     *
      * Utilisez `await` pour attendre les résultats de cette fonction asynchrone.
      */
 
@@ -44,124 +50,85 @@ class PageScraper {
 
         await dismissAlertIfNeeded(driver);
 
-        // La position du curseur dans la liste. On commence à 0 (la première transaction).
-        var currentIndex = 0;
+        // Normaliser la page et obtenir les transactions.
 
-        // La liste de toutes les transactions.
-        var transactions = [];
+        return await driver.executeScript(`
 
-        // Cette boucle va récupérer toutes les transactions, en avançant dans la liste
-        // jusqu'à ce qu'elle soit vide.
+            // Normaliser le contenu de la page.
+            generate = function() {}
+            failmode = false; slowmode = false; hasiframe = false;
 
-        while(true) {
+            // La position du curseur dans la liste. On commence à 0 (la première transaction).
+            start = 0;
 
-            // On récupère toutes les transactions affichées sur la page.
-            const newTransactions = await parseWebElements(driver);
+            // La liste de toutes les transactions.
+            var transactions = [];
 
-            if (newTransactions.length == 0) {
-                // Si il n'y a pas de nouvelles transactions (le tableau est vide)
-                // alors le scraping est terminé, on peut quitter la boucle.
-                break;
+            // Cette boucle va récupérer toutes les transactions, en avançant dans la liste
+            // jusqu'à ce qu'elle soit vide.
+
+            while(true) {
+
+                // Recharger les données du tableau.
+                doGenerate();
+
+                var table = document.getElementsByTagName("table")[0];
+                var rows = table.rows;
+    
+                // > Statut du tableau
+    
+                if (rows.length == 1) {
+                    // Si il n'y a pas de nouvelles transactions (le tableau est vide)
+                    // alors le scraping est terminé, on peut quitter la boucle.
+                    break;
+                }
+    
+                // > Extraction des transactions
+    
+                for(var i=1; i< rows.length; i++) {
+    
+                    var data = rows[i].cells;
+    
+                    // Obtenir le compte et la transaction
+    
+                    var account = data[0].innerText;
+                    var transaction = data[1].innerText;
+    
+                    // Obtenir le montant et la devise
+    
+                    const amountCellText = data[2].innerText;
+    
+                    const currency = amountCellText.charAt(amountCellText.length - 1);
+                    const amountText = amountCellText.slice(0, amountCellText.length - 1);
+                    const amount = parseInt(amountText);
+    
+                    // Créer l'objet transaction au format JSON
+    
+                    transactions.push({
+                        "Account": account,
+                        "Transaction": transaction,
+                        "Amount": amount,
+                        "Currency": currency
+                    });
+    
+                }    
+
+                // On bouge le curseur de la liste après le numéro de la dernière transaction récupérée
+                // (par ex: si on démarre à la transaction 0 et que 50 transactions ont été trouvées,
+                // le prochain cycle commencera à la transaction 50).
+                start += (rows.length - 1);
+
             }
 
-            // On ajoute les nouvelles transactions à la liste des transactions déjà récupérées.
-            transactions = transactions.concat(newTransactions);
+            return transactions;
 
-            // On bouge le curseur de la liste après le numéro de la dernière transaction récupérée
-            // (par ex: si on démarre à la transaction 0 et que 50 transactions ont été trouvées,
-            // le prochain cycle commencera à la transaction 50).
-            currentIndex += newTransactions.length;
-
-            // On charge la suite de la liste dans le driver Chrome.
-            await driver.executeScript("start = " + currentIndex + ";");
-
-        }
-
-        return transactions;
+        `);
 
     }
 
 }
 
 module.exports = PageScraper
-
-/*=== Parsers ===*/
-
-/**
- * Démarre le traitement des éléments sur la page.
- *
- * Avant de scrapper les transactions, cette méthode prépare la page:
- *
- * - Elle désactive le mode échec et le mode lent
- * - Elle désactive les iFrame
- * - Elle recharge le tableau principal, pour afficher les données pour la partie de la liste actuelle
- *
- * Toutes les transactions ont été traitées une fois que le tableau affiché est vide.
- *
- * @param {ThenableWebDriver} driver Le driver où la page à scrapper est chargée.
- * @return {Object[]} Les transactions trouvées sur la page.
- */
-
-async function parseWebElements(driver) {
-
-    // Les transactions qui ont été trouvées sur cette page.
-    var transactions = [];
-
-    // Normaliser la page et obtenir les transactions.
-
-    return await driver.executeScript(`
-        generate = function() {}
-        failmode = false; slowmode = false; hasiframe = false;
-        doGenerate();
-
-        var table = document.getElementsByTagName("table")[0];
-
-        var rows = [];
-        var rowElements = table.rows;
-
-        // > Statut du tableau
-
-        if (rows.length == 1) {
-            // Si le tableau ne contient pas de lignes, alors toutes les transactions ont été
-            // scrappées. On retourne un array vide pour que la fonction principale comprenne
-            // que le scrapping est terminé.
-            return [];
-        }
-
-        // > Extraction des transactions
-
-        for(var i=1; i< rowElements.length; i++) {
-
-            var data = rowElements[i].cells;
-
-            // Obtenir le compte et la transaction
-
-            var account = data[0].innerText;
-            var transaction = data[1].innerText;
-
-            // Obtenir le montant et la devise
-
-            const amountCellText = data[2].innerText;
-
-            const currency = amountCellText.charAt(amountCellText.length - 1);
-            const amountText = amountCellText.slice(0, amountCellText.length - 1);
-            const amount = parseInt(amountText);
-
-            // Créer l'objet transaction au format JSON
-
-            rows.push({
-                "Account": account,
-                "Transaction": transaction,
-                "Amount": amount,
-                "Currency": currency
-            });
-
-        }
-
-        return rows;
-    `);
-
-}
 
 /*=== Helpers ===*/
 
